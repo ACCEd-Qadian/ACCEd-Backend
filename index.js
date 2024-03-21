@@ -2,9 +2,10 @@ const express = require('express')
 const cors = require("cors")
 const fs = require("fs");
 const bodyparser = require("body-parser");
-const data = require('./data');
 const port = process.env.PORT || 2000;
 const bcrypt = require("bcryptjs")
+const mongoose = require("mongoose");
+const User = require("./models/useModel");
 
 
 const app = express();
@@ -13,6 +14,14 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}));
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({extended:true}))
+
+
+// Database connection 
+mongoose.connect("mongodb+srv://acced:ObQn8maGlhjlCW8m@clusteracced.vxkfu0a.mongodb.net/ACCEd?retryWrites=true&w=majority"
+    , {
+        useNewUrlParser:true,
+        useUnifiedTopology:true
+    });
 
 
 // GET API 
@@ -109,53 +118,41 @@ try {
     console.log("error reading userdata.js", error)
 }
 
-app.post("/register", (req, res)=>{
+app.post("/register", async(req, res)=>{
+    const user = new User({
+        name: req.body.name,
+        email: req.body.email,
+        password: bcrypt.hashSync(req.body.password, 8),
+      });
 
-    const newuserData = {
-        name:req.body.name,
-        email: req.body.newemail,
-        password: req.body.password
-        
-    };
-    
+      console.log("user1" + user)
 
-    // 
-    const isemailDuplicate = usersData.some(data=>data.email===newuserData.email)
-if (isemailDuplicate) {
-    return res.status(400).send("User Already exists");   
-}
-// 
+      const createdUser = await user.save();
 
-usersData.push(newuserData)
-
-    fs.writeFile("userdata.js",`module.exports = ${JSON.stringify(usersData, null, 2)}`, (err)=>{
-        if (err) {
-            console.log("error writing userdata.js", err);
-            res.status(500).send("error saving data")
-        }else{
-            res.send("Registerd Success")
-        }
-    })
-
+      res.send({
+        name: createdUser.name,
+        email: createdUser.email,
+        isAdmin: createdUser.isAdmin,
+    });
 })
 
 
 // Login API 
-app.post("/login",(req, res)=>{ 
-    const {newemail, password} = req.body;
-const newlogindata = {
-    email:newemail, 
-    password:password
-}
-    console.log("new login data is"+newlogindata)
+app.post("/login", async(req, res)=>{ 
+    const user = await User.findOne({ email: req.body.email });
 
-    // Find Data 
-    const searchuser = usersData.find(data=>data.email === newlogindata.email && data.password=== newlogindata.password);
-    if (searchuser) {
-        res.json(searchuser)
-    }else{
-        res.status(404).send("Invalid email or password")
+    if(user){
+        if (bcrypt.compareSync(req.body.password, user.password)) {
+            res.send({
+              _id: user._id,
+              name: user.name,
+              email: user.email,
+              isAdmin: user.isAdmin,
+            });
+            return;
+          }
     }
+        res.status(401).send({ message: 'Invalid email or password' });
 })
 
 
