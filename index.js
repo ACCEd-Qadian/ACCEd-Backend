@@ -177,7 +177,7 @@ app.post("/sendotp", (req, res) => {
     from: "alitaarique14@gmail.com", // Sender address
     to: email, // Recipient address
     subject: "Your OTP FROM ACCEd Qadian", // Email subject
-    text: `Your OTP is: ${otp}`, // Email body
+    text: `Your OTP is: ${otp} for Password Reset on the ACCEd Site.`, // Email body
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
