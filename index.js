@@ -151,8 +151,8 @@ app.post("/sendotp", (req, res) => {
   const { email } = req.body;
   const otp = otpGenerator.generate(6, {
     digits: true,
-    alphabets: false,
-    upperCase: false,
+    upperCaseAlphabets: false,
+    lowerCaseAlphabets: false,
     specialChars: false,
   });
 
@@ -162,7 +162,7 @@ app.post("/sendotp", (req, res) => {
   const mailOptions = {
     from: "alitaarique14@gmail.com", // Sender address
     to: email, // Recipient address
-    subject: "Your OTP", // Email subject
+    subject: "Your OTP FROM ACCEd Qadian", // Email subject
     text: `Your OTP is: ${otp}`, // Email body
   };
 

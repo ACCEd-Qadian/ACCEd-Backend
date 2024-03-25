@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const certificateSchema = new mongoose.Schema({
   studentName: { type: String, required: true },
   fatherName: { type: String, required: true },
-  enrollmentNumber: { type: String, required: true },
+  enrollmentNumber: { type: String, required: true, unique: true },
   course: { type: String, required: true },
   grade: { type: String, required: true },
   startdate: { type: Date, required: true },
