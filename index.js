@@ -107,21 +107,35 @@ app.get("/certificateSearch", async (req, res) => {
 // Register API
 
 app.post("/register", async (req, res) => {
-  const user = new User({
-    name: req.body.name,
-    email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, 8),
-  });
+  const { name, email, password } = req.body;
 
-//   console.log("user1" + user);
+  try {
+    // Check if the email already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).send({ error: "Email already exists" });
+    }
 
-  const createdUser = await user.save();
+    // Create a new user
+    const user = new User({
+      name,
+      email,
+      password: bcrypt.hashSync(password, 8),
+    });
 
-  res.send({
-    name: createdUser.name,
-    email: createdUser.email,
-    isAdmin: createdUser.isAdmin,
-  });
+    // Save the user to the database
+    const createdUser = await user.save();
+
+    // Send response
+    res.send({
+      name: createdUser.name,
+      email: createdUser.email,
+      isAdmin: createdUser.isAdmin,
+    });
+  } catch (error) {
+    console.error("Error registering user:", error);
+    res.status(500).send({ error: "Error registering user" });
+  }
 });
 
 // Login API
