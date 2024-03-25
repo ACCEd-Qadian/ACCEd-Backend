@@ -1,11 +1,11 @@
 const express = require("express");
 const cors = require("cors");
-const fs = require("fs");
 const bodyparser = require("body-parser");
 const port = process.env.PORT || 2000;
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const User = require("./models/useModel");
+const Certificate = require("./models/certificateModel");
 const nodemailer = require("nodemailer");
 const otpGenerator = require("otp-generator");
 
@@ -39,16 +39,10 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Read file
-let currentData = [];
-try {
-  currentData = require("./data");
-} catch (error) {
-  console.log("error reading data.js", error);
-}
 
-// Student Data Post API
-app.post("/studentdata", (req, res) => {
+
+// API endpoint for certificate upload
+app.post("/uploadCertificate", async (req, res) => {
   const {
     studentName,
     fatherName,
@@ -61,72 +55,56 @@ app.post("/studentdata", (req, res) => {
   } = req.body;
 
   if (enrollmentNumber === "") {
-    return res.status(400).send("Fill in all the fields");
+    return res.status(400).send({ error: "Fill in all the fields" });
   }
-
-  const isenrollmentNumDuplicate = currentData.some(
-    (data) => data.enrollmentNumber === enrollmentNumber
-  );
-  if (isenrollmentNumDuplicate) {
-    return res.status(400).send("Enrollment Already exists");
-  }
-
-  // Generate index number
-  const index = currentData.length;
-
-  const newData = {
-    index,
-    studentName,
-    fatherName,
-    enrollmentNumber,
-    course,
-    grade,
-    startdate,
-    enddate,
-    date,
-  };
-  console.log("Recieved form data", newData);
-  currentData.push(newData);
-
-  fs.writeFile(
-    "data.js",
-    `module.exports = ${JSON.stringify(currentData, null, 2)}`,
-    (err) => {
-      if (err) {
-        console.log("error writing data.js", err);
-        res.status(500).send("error saving data");
-      } else {
-        res.send("data saved success");
-      }
+  try {
+    // Check if enrollment number already exists
+    const existingCertificate = await Certificate.findOne({ enrollmentNumber });
+    if (existingCertificate) {
+      return res.status(400).send({ error: "Enrollment already exists" });
     }
-  );
+
+    // Create a new student document
+    const newCertificate = new Certificate({
+      studentName,
+      fatherName,
+      enrollmentNumber,
+      course,
+      grade,
+      startdate,
+      enddate,
+      date,
+    });
+
+    // Save the student document to MongoDB
+    await newCertificate.save();
+    res.send({ message: "Student data saved successfully" });
+  } catch (error) {
+    console.error("Error saving student data:", error);
+    res.status(500).send({error:"Error saving student data"});
+  }
 });
 
 // Student Data Search API
-app.get("/search", (req, res) => {
-  const { enrollmentNumber } = req.query;
-  const newdata = { enrollmentNumber };
-  console.log("new data is" + newdata);
+app.get("/certificateSearch", async (req, res) => {
+    const { enrollmentNumber } = req.query;
+  
+    try {
+      // Find student data by enrollment number
+      const searchData = await Certificate.findOne({ enrollmentNumber });
+      if (searchData) {
+        res.json(searchData);
+      } else {
+        res.status(404).send({error:"Data not found"});
+      }
+    } catch (error) {
+      console.error("Error searching student data:", error);
+      res.status(500).send({error:"Error searching student data"});
+    }
+  });
 
-  // Find Data
-  const searchData = currentData.find(
-    (data) => data.enrollmentNumber === enrollmentNumber
-  );
-  if (searchData) {
-    res.json(searchData);
-  } else {
-    res.status(404).send("Data not found");
-  }
-});
 
 // Register API
-//
-let usersData = [];
-try {
-  usersData = require("./userdata");
-} catch (error) {
-  console.log("error reading userdata.js", error);
-}
 
 app.post("/register", async (req, res) => {
   const user = new User({
@@ -135,7 +113,7 @@ app.post("/register", async (req, res) => {
     password: bcrypt.hashSync(req.body.password, 8),
   });
 
-  console.log("user1" + user);
+//   console.log("user1" + user);
 
   const createdUser = await user.save();
 
@@ -163,6 +141,7 @@ app.post("/login", async (req, res) => {
   }
   res.status(401).send({ message: "Invalid email or password" });
 });
+
 
 // In-memory storage for simplicity. You may want to use a database.
 const otpMap = new Map();
