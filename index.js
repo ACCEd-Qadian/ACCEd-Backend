@@ -21,7 +21,6 @@ mongoose.connect(
   "mongodb+srv://acced:ObQn8maGlhjlCW8m@clusteracced.vxkfu0a.mongodb.net/ACCEd?retryWrites=true&w=majority",
   {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
   }
 );
 
