@@ -20,8 +20,7 @@ app.use(bodyparser.urlencoded({ extended: true }));
 mongoose.connect(
   "mongodb+srv://acced:ObQn8maGlhjlCW8m@clusteracced.vxkfu0a.mongodb.net/ACCEd?retryWrites=true&w=majority",
   {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+    
   }
 );
 
@@ -41,7 +40,7 @@ const transporter = nodemailer.createTransport({
 
 
 
-// API endpoint for certificate upload
+// APIs endpoint for certificate upload
 app.post("/uploadCertificate", async (req, res) => {
   const {
     studentName,
