@@ -40,7 +40,7 @@ const transporter = nodemailer.createTransport({
 
 
 
-// API endpoint for certificate upload
+// APIs endpoint for certificate upload
 app.post("/uploadCertificate", async (req, res) => {
   const {
     studentName,
