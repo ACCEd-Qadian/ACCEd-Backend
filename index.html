@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>17th Birthday | Cinematic Edit</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;500;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+
+<body>
+    <div id="start-overlay">
+        <div class="start-content">
+            <h1 class="gold-gradient-text">17</h1>
+            <p>Tap to start the cinematic experience</p>
+        </div>
+    </div>
+    <div class="overlay"></div>
+    <div class="container">
+        <!-- Scene 1: Date Highlight -->
+        <section class="scene" id="scene-1">
+            <div class="content">
+                <h2 class="date-text">19.02.2026</h2>
+                <div class="glow-point"></div>
+            </div>
+        </section>
+
+        <!-- Scene 2: The Transition -->
+        <section class="scene" id="scene-2">
+            <div class="content">
+                <div class="age-wrapper">
+                    <span class="old-age">16 Complete</span>
+                    <h1 class="new-age">Level 17 Unlocked</h1>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scene 3: Born to Shine -->
+        <section class="scene" id="scene-3">
+            <div class="content">
+                <h1 class="shine-text">Born to Shine</h1>
+                <div class="flare"></div>
+            </div>
+        </section>
+
+        <!-- Final Scene -->
+        <section class="scene" id="scene-4">
+            <div class="content">
+                <div class="final-message">
+                    <h3 class="gold-gradient-text">Happy Birthday Mohammed Talha!</h3>
+                    <p class="sub-text">Born to Shine • 19.02.2026</p>
+                    <div class="confetti-container" id="confetti"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Background Music -->
+    <div id="audio-container">
+        <button id="play-btn">Tap for Cinematic Experience</button>
+        <audio id="bg-music" loop>
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+
+    <script src="script.js"></script>
+</body>
+
+</html>
